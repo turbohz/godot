@@ -974,6 +974,18 @@ bool Node::is_ready() const {
 	return data.ready;
 }
 
+Node *Node::onready() {
+	if (!data.ready_first) {
+		Error e = MessageQueue::get_singleton()->push_call(
+				this->get_instance_id(),
+				StringName("emit_signal"),
+				Variant("ready"));
+
+		ERR_FAIL_COND_V_MSG(e > OK, this, "e1 failure");
+	}
+	return this;
+}
+
 int Node::get_process_priority() const {
 	return data.process_priority;
 }
@@ -3033,6 +3045,7 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_node_and_resource", "path"), &Node::_get_node_and_resource);
 
 	ClassDB::bind_method(D_METHOD("is_ready"), &Node::is_ready);
+	ClassDB::bind_method(D_METHOD("onready"), &Node::onready);
 	ClassDB::bind_method(D_METHOD("is_inside_tree"), &Node::is_inside_tree);
 	ClassDB::bind_method(D_METHOD("is_a_parent_of", "node"), &Node::is_a_parent_of);
 	ClassDB::bind_method(D_METHOD("is_greater_than", "node"), &Node::is_greater_than);

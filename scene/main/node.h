@@ -409,6 +409,7 @@ public:
 	bool is_processing_internal() const;
 
 	bool is_ready() const;
+	Node *onready();
 
 	void set_process_priority(int p_priority);
 	int get_process_priority() const;
