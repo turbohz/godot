@@ -133,6 +133,8 @@ void Node::_notification(int p_notification) {
 		} break;
 		case NOTIFICATION_READY: {
 			if (get_script_instance()) {
+				// auto enable (some) callbacks, if methods exist in script
+
 				if (get_script_instance()->has_method(SceneStringNames::get_singleton()->_input)) {
 					set_process_input(true);
 				}
@@ -189,6 +191,8 @@ void Node::_propagate_ready() {
 		notification(NOTIFICATION_READY);
 		emit_signal(SceneStringNames::get_singleton()->ready);
 	}
+
+	data.ready = true;
 }
 
 void Node::_propagate_physics_interpolated(bool p_interpolated) {
@@ -964,6 +968,10 @@ void Node::set_process_priority(int p_priority) {
 	if (is_physics_processing_internal()) {
 		data.tree->make_group_changed("physics_process_internal");
 	}
+}
+
+bool Node::is_ready() const {
+	return data.ready;
 }
 
 int Node::get_process_priority() const {
@@ -3024,6 +3032,7 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("has_node_and_resource", "path"), &Node::has_node_and_resource);
 	ClassDB::bind_method(D_METHOD("get_node_and_resource", "path"), &Node::_get_node_and_resource);
 
+	ClassDB::bind_method(D_METHOD("is_ready"), &Node::is_ready);
 	ClassDB::bind_method(D_METHOD("is_inside_tree"), &Node::is_inside_tree);
 	ClassDB::bind_method(D_METHOD("is_a_parent_of", "node"), &Node::is_a_parent_of);
 	ClassDB::bind_method(D_METHOD("is_greater_than", "node"), &Node::is_greater_than);
@@ -3211,6 +3220,7 @@ void Node::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "editor/display_folded", PROPERTY_HINT_NONE, "", 0), "set_display_folded", "is_displayed_folded");
 #endif
 
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "ready", PROPERTY_HINT_NONE, "", 0), "", "is_ready");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "name", PROPERTY_HINT_NONE, "", 0), "set_name", "get_name");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "unique_name_in_owner", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR), "set_unique_name_in_owner", "is_unique_name_in_owner");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "filename", PROPERTY_HINT_NONE, "", 0), "set_filename", "get_filename");

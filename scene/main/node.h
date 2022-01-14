@@ -178,6 +178,7 @@ private:
 		bool editable_instance : 1;
 
 		bool inside_tree : 1;
+		bool ready;
 		bool ready_notified : 1; //this is a small hack, so if a node is added during _ready() to the tree, it correctly gets the _ready() notification
 		bool ready_first : 1;
 
@@ -406,6 +407,8 @@ public:
 
 	void set_process_internal(bool p_idle_process_internal);
 	bool is_processing_internal() const;
+
+	bool is_ready() const;
 
 	void set_process_priority(int p_priority);
 	int get_process_priority() const;
