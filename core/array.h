@@ -106,6 +106,7 @@ public:
 	const void *id() const;
 
 	Array(const Array &p_from);
+	Array(int p_size, const Variant &p_value);
 	Array();
 	~Array();
 };

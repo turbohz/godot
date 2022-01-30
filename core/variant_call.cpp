@@ -1039,6 +1039,10 @@ struct _VariantCall {
 
 	static ConstructFunc *construct_funcs;
 
+	static void Array_init1(Variant &r_ret, const Variant **p_args) {
+		r_ret = Array(*p_args[0], *p_args[1]);
+	}
+
 	static void Vector2_init1(Variant &r_ret, const Variant **p_args) {
 		r_ret = Vector2(*p_args[0], *p_args[1]);
 	}
@@ -2191,6 +2195,7 @@ void register_variant_methods() {
 
 	/* REGISTER CONSTRUCTORS */
 
+	_VariantCall::add_constructor(_VariantCall::Array_init1, Variant::ARRAY, "size", Variant::INT, "value", Variant::NIL);
 	_VariantCall::add_constructor(_VariantCall::Vector2_init1, Variant::VECTOR2, "x", Variant::REAL, "y", Variant::REAL);
 
 	_VariantCall::add_constructor(_VariantCall::Rect2_init1, Variant::RECT2, "position", Variant::VECTOR2, "size", Variant::VECTOR2);
