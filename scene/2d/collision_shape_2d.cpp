@@ -214,6 +214,7 @@ String CollisionShape2D::get_configuration_warning() const {
 
 void CollisionShape2D::set_disabled(bool p_disabled) {
 	disabled = p_disabled;
+	enabled = !disabled;
 	update();
 	if (parent) {
 		parent->shape_owner_set_disabled(owner_id, p_disabled);
@@ -222,6 +223,19 @@ void CollisionShape2D::set_disabled(bool p_disabled) {
 
 bool CollisionShape2D::is_disabled() const {
 	return disabled;
+}
+
+void CollisionShape2D::set_enabled(bool p_enabled) {
+	enabled = p_enabled;
+	disabled = !enabled;
+	update();
+	if (parent) {
+		parent->shape_owner_set_disabled(owner_id, disabled);
+	}
+}
+
+bool CollisionShape2D::is_enabled() const {
+	return enabled;
 }
 
 void CollisionShape2D::set_one_way_collision(bool p_enable) {
@@ -253,6 +267,8 @@ void CollisionShape2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_shape"), &CollisionShape2D::get_shape);
 	ClassDB::bind_method(D_METHOD("set_disabled", "disabled"), &CollisionShape2D::set_disabled);
 	ClassDB::bind_method(D_METHOD("is_disabled"), &CollisionShape2D::is_disabled);
+	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &CollisionShape2D::set_enabled);
+	ClassDB::bind_method(D_METHOD("is_enabled"), &CollisionShape2D::is_enabled);
 	ClassDB::bind_method(D_METHOD("set_one_way_collision", "enabled"), &CollisionShape2D::set_one_way_collision);
 	ClassDB::bind_method(D_METHOD("is_one_way_collision_enabled"), &CollisionShape2D::is_one_way_collision_enabled);
 	ClassDB::bind_method(D_METHOD("set_one_way_collision_margin", "margin"), &CollisionShape2D::set_one_way_collision_margin);
@@ -261,6 +277,7 @@ void CollisionShape2D::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "Shape2D"), "set_shape", "get_shape");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "disabled"), "set_disabled", "is_disabled");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enabled"), "set_enabled", "is_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "one_way_collision"), "set_one_way_collision", "is_one_way_collision_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "one_way_collision_margin", PROPERTY_HINT_RANGE, "0,128,0.1"), "set_one_way_collision_margin", "get_one_way_collision_margin");
 }
@@ -271,6 +288,7 @@ CollisionShape2D::CollisionShape2D() {
 	owner_id = 0;
 	parent = nullptr;
 	disabled = false;
+	enabled = true;
 	one_way_collision = false;
 	one_way_collision_margin = 1.0;
 }
