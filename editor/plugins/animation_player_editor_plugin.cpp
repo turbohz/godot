@@ -266,8 +266,14 @@ void AnimationPlayerEditor::_stop_pressed() {
 		return;
 	}
 
-	player->stop(false);
-	play->set_pressed(false);
+	if (player->is_playing()) {
+		player->stop(false);
+		play->set_pressed(false);
+	} else {
+		// reset playback position to 0
+		_animation_key_editor_seek(0, false);
+	}
+
 	stop->set_pressed(true);
 }
 
