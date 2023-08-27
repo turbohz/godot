@@ -31,9 +31,9 @@
 #include "animation_track_editor.h"
 
 #include "animation_track_editor_plugins.h"
+#include "core/message_queue.h"
 #include "core/os/input.h"
 #include "core/os/keyboard.h"
-#include "core/message_queue.h"
 #include "editor/animation_bezier_editor.h"
 #include "editor/plugins/animation_player_editor_plugin.h"
 #include "editor_node.h"
@@ -111,7 +111,7 @@ public:
 		String name = p_name;
 
 		if (name == "key") {
-			emit_signal("_key_selected",p_value,true,track);
+			emit_signal("_key_selected", p_value, true, track);
 			return true;
 		}
 
@@ -4856,15 +4856,21 @@ void AnimationTrackEditor::_update_key_edit() {
 	}
 
 	if (selection.size() == 1) {
+		SelectedKey selected = selection.front()->key();
+		float ofs = animation->track_get_key_time(selected.track, selected.key);
+
+		if (seek_key->is_pressed()) {
+			set_anim_pos(ofs);
+			emit_signal("timeline_changed", ofs, false);
+		}
+
 		key_edit = memnew(AnimationTrackKeyEdit);
 		key_edit->animation = animation;
-		key_edit->track = selection.front()->key().track;
+		key_edit->track = selected.track;
 		key_edit->use_fps = timeline->is_using_fps();
-		key_edit->connect("_key_selected",this,"_key_selected",varray(),CONNECT_DEFERRED);
-
-		float ofs = animation->track_get_key_time(key_edit->track, selection.front()->key().key);
 		key_edit->key_ofs = ofs;
 		key_edit->root_path = root;
+		key_edit->connect("_key_selected", this, "_key_selected", varray(), CONNECT_DEFERRED);
 
 		NodePath np;
 		key_edit->hint = _find_hint_for_track(key_edit->track, np);
@@ -6001,6 +6007,15 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	view_group->set_tooltip(TTR("Group tracks by node or display them as plain list."));
 
 	bottom_hb->add_child(view_group);
+	bottom_hb->add_child(memnew(VSeparator));
+
+	seek_key = memnew(ToolButton);
+	seek_key->set_text(TTR("seek key"));
+	seek_key->set_toggle_mode(true);
+	seek_key->set_tooltip(TTR("Update timeline seek when selecting a single key"));
+	seek_key->set_pressed(true);
+
+	bottom_hb->add_child(seek_key);
 	bottom_hb->add_child(memnew(VSeparator));
 
 	snap = memnew(ToolButton);

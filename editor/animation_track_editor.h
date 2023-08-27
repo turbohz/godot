@@ -461,6 +461,7 @@ class AnimationTrackEditor : public VBoxContainer {
 	void _view_group_toggle();
 	ToolButton *view_group;
 	ToolButton *selected_filter;
+	ToolButton *seek_key;
 
 	void _selection_changed();
 
