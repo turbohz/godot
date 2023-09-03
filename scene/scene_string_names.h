@@ -95,6 +95,7 @@ public:
 	StringName step_finished;
 	StringName emission_finished;
 	StringName animation_finished;
+	StringName animation_looped;
 	StringName animation_changed;
 	StringName animation_started;
 

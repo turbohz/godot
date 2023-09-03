@@ -774,6 +774,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, float 
 
 void AnimationPlayer::_animation_process_data(PlaybackData &cd, float p_delta, float p_blend, bool p_seeked, bool p_started) {
 	float delta = p_delta * speed_scale * cd.speed_scale;
+	bool backwards = signbit(delta); // Negative zero means playing backwards too
 	float next_pos = cd.pos + delta;
 
 	float len = cd.from->animation->get_length();
@@ -786,7 +787,6 @@ void AnimationPlayer::_animation_process_data(PlaybackData &cd, float p_delta, f
 			next_pos = len;
 		}
 
-		bool backwards = signbit(delta); // Negative zero means playing backwards too
 		delta = next_pos - cd.pos; // Fix delta (after determination of backwards because negative zero is lost here)
 
 		if (&cd == &playback.current) {
@@ -810,6 +810,10 @@ void AnimationPlayer::_animation_process_data(PlaybackData &cd, float p_delta, f
 			// so state at time=length is previewable in the editor
 			next_pos = len;
 		} else {
+			bool looped = !backwards && looped_next_pos < next_pos;
+			if (looped) {
+				emit_signal(SceneStringNames::get_singleton()->animation_looped, cd.from->animation->get_name());
+			}
 			next_pos = looped_next_pos;
 		}
 	}
@@ -1687,6 +1691,7 @@ void AnimationPlayer::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("animation_finished", PropertyInfo(Variant::STRING, "anim_name")));
 	ADD_SIGNAL(MethodInfo("animation_changed", PropertyInfo(Variant::STRING, "old_name"), PropertyInfo(Variant::STRING, "new_name")));
 	ADD_SIGNAL(MethodInfo("animation_started", PropertyInfo(Variant::STRING, "anim_name")));
+	ADD_SIGNAL(MethodInfo("animation_looped", PropertyInfo(Variant::STRING, "anim_name")));
 	ADD_SIGNAL(MethodInfo("caches_cleared"));
 
 	BIND_ENUM_CONSTANT(ANIMATION_PROCESS_PHYSICS);
