@@ -2246,6 +2246,9 @@ void register_variant_methods() {
 	_VariantCall::add_variant_constant(Variant::VECTOR3, "DOWN", Vector3(0, -1, 0));
 	_VariantCall::add_variant_constant(Variant::VECTOR3, "FORWARD", Vector3(0, 0, -1));
 	_VariantCall::add_variant_constant(Variant::VECTOR3, "BACK", Vector3(0, 0, 1));
+	_VariantCall::add_variant_constant(Variant::VECTOR3, "FLIP_X", Vector3(-1, 1, 1));
+	_VariantCall::add_variant_constant(Variant::VECTOR3, "FLIP_Y", Vector3(1, -1, 1));
+	_VariantCall::add_variant_constant(Variant::VECTOR3, "FLIP_Z", Vector3(1, 1, -1));
 
 	_VariantCall::add_constant(Variant::VECTOR2, "AXIS_X", Vector2::AXIS_X);
 	_VariantCall::add_constant(Variant::VECTOR2, "AXIS_Y", Vector2::AXIS_Y);
@@ -2257,6 +2260,8 @@ void register_variant_methods() {
 	_VariantCall::add_variant_constant(Variant::VECTOR2, "RIGHT", Vector2(1, 0));
 	_VariantCall::add_variant_constant(Variant::VECTOR2, "UP", Vector2(0, -1));
 	_VariantCall::add_variant_constant(Variant::VECTOR2, "DOWN", Vector2(0, 1));
+	_VariantCall::add_variant_constant(Variant::VECTOR2, "FLIP_X", Vector2(-1, 1));
+	_VariantCall::add_variant_constant(Variant::VECTOR2, "FLIP_Y", Vector2(1, -1));
 
 	_VariantCall::add_variant_constant(Variant::TRANSFORM2D, "IDENTITY", Transform2D());
 	_VariantCall::add_variant_constant(Variant::TRANSFORM2D, "FLIP_X", Transform2D(-1, 0, 0, 1, 0, 0));
