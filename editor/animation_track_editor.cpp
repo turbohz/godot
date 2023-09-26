@@ -205,6 +205,7 @@ public:
 					undo_redo->commit_action();
 
 					setting = false;
+					emit_signal("_key_selected", key, true, track);
 					return true;
 				}
 			} break;
