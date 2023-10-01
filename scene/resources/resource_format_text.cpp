@@ -625,6 +625,10 @@ int ResourceInteractiveLoaderText::get_stage_count() const {
 	return resources_total; //+ext_resources;
 }
 
+String ResourceInteractiveLoaderText::get_error_message() {
+	return error_text;
+}
+
 void ResourceInteractiveLoaderText::set_translation_remapped(bool p_remapped) {
 	translation_remapped = p_remapped;
 }

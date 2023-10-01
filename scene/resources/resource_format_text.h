@@ -114,6 +114,7 @@ public:
 	virtual Error poll();
 	virtual int get_stage() const;
 	virtual int get_stage_count() const;
+	virtual String get_error_message();
 	virtual void set_translation_remapped(bool p_remapped);
 
 	void open(FileAccess *p_f, bool p_skip_first_tag = false);

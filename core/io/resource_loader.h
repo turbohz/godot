@@ -51,6 +51,7 @@ public:
 	virtual Error poll() = 0;
 	virtual int get_stage() const = 0;
 	virtual int get_stage_count() const = 0;
+	virtual String get_error_message() = 0;
 	virtual void set_translation_remapped(bool p_remapped) = 0;
 	virtual Error wait();
 	virtual void set_no_subresource_cache(bool p_no_subresource_cache);
