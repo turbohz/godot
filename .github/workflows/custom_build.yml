@@ -1,0 +1,108 @@
+name: Custom Godot build
+on:
+  workflow_call:
+
+env:
+  GODOT_BASE_BRANCH: 3.x-custom
+  SCONSFLAGS: profile=profiles/custom-template.py verbose=yes warnings=all werror=yes debug_symbols=no production=yes optimize=speed
+  EM_VERSION: 3.1.18
+  EM_CACHE_FOLDER: "emsdk-cache"
+
+jobs:
+  javascript-build:
+    runs-on: "ubuntu-20.04"
+    name: Web Template (target=release, tools=no)
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Emscripten latest
+        uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: ${{env.EM_VERSION}}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+
+      - name: Verify Emscripten setup
+        run: |
+          emcc -v
+
+      - name: Setup Godot build cache
+        uses: ./.github/actions/godot-cache
+        continue-on-error: true
+
+      - name: Setup python and scons
+        uses: ./.github/actions/godot-deps
+
+      - name: Compilation
+        uses: ./.github/actions/godot-build
+        with:
+          platform: javascript
+          target: release
+        env:
+          SCRIPT_AES256_ENCRYPTION_KEY: ${{ secrets.SCRIPT_AES256_ENCRYPTION_KEY }}
+
+      - name: Upload artifact
+        uses: ./.github/actions/upload-artifact
+
+  windows-build:
+    # Windows 10 with latest image
+    runs-on: "windows-latest"
+    name: Windows Template (target=release, tools=no)
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Godot build cache
+        uses: ./.github/actions/godot-cache
+        with:
+          cache-name: windows-template
+        continue-on-error: true
+
+      - name: Setup python and scons
+        uses: ./.github/actions/godot-deps
+
+      - name: Setup MSVC problem matcher
+        uses: ammaraskar/msvc-problem-matcher@master
+
+      - name: Compilation
+        uses: ./.github/actions/godot-build
+        with:
+          platform: windows
+        env:
+          SCONS_CACHE_MSVC_CONFIG: true
+          SCONSFLAGS: ${{ env.SCONSFLAGS }}
+          SCRIPT_AES256_ENCRYPTION_KEY: ${{ secrets.SCRIPT_AES256_ENCRYPTION_KEY }}
+
+      - name: Upload artifact
+        uses: ./.github/actions/upload-artifact
+
+  release:
+    name: Publish release
+    needs: [javascript-build, windows-build]
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: |
+          pwd
+          tree
+          find . -type f  -print -execdir file -- '{}' \;
+
+      - name: Prepare release
+        run: |
+          tree
+          mkdir dist
+          cp artifacts/javascript-build/godot.javascript.opt.zip dist/javascript.zip
+          zip -jr dist/windows.zip artifacts/windows-build/*
+
+      - name: Release artifact
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "3.x-custom"
+          files: "dist/*"
