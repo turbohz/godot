@@ -1,0 +1,48 @@
+#! /bin/bash
+
+set -e
+
+export SCONSFLAGS="-j8"
+
+OPTIONS=(
+	"platform=x11"
+	"tools=no"
+	"udev=yes"
+)
+
+case "$1" in
+
+	"compat" | "")
+		OPTIONS=(
+			"${OPTIONS[*]}"
+			"target=release"
+			"optimize=none"
+		);;
+
+	"optim")
+		OPTIONS=(
+			"profile=profiles/custom-template.py"
+			"${OPTIONS[*]}"
+			"target=release"
+			"optimize=speed"
+			"linker=mold"
+			"production=yes" # debug_symbols=no use_static_cpp=yes lto=auto
+			"lto=none"
+		);;
+
+	"debug")
+		OPTIONS=(
+			"${OPTIONS[*]}"
+			"target=debug"
+			"optimize=none"
+			"dev=yes" # verbose=yes warnings=extra werror=yes
+		);;
+
+	*)
+		echo -n "Unknown build type: $1"
+		exit 1
+		;;
+esac
+
+echo "Building ($1) with options: ${OPTIONS[*]}"
+scons ${OPTIONS[*]}

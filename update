@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+git stash
+git checkout upstream/3.x
+FROM=$(git rev-parse --short HEAD)
+echo "Rebase from: $FROM"
+git checkout 3.x-custom
+git fetch upstream
+git rebase --onto upstream/3.x "$FROM"
+git stash pop
