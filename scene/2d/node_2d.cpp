@@ -348,6 +348,15 @@ int Node2D::get_z_index() const {
 	return z_index;
 }
 
+void Node2D::set_y_sort_enabled(bool p_enabled) {
+	y_sort = p_enabled;
+	VS::get_singleton()->canvas_item_set_sort_children_by_y(get_canvas_item(), p_enabled);
+}
+
+bool Node2D::is_y_sort_enabled() const {
+	return y_sort;
+}
+
 Transform2D Node2D::get_relative_transform_to_parent(const Node *p_parent) const {
 	if (p_parent == this) {
 		return Transform2D();
@@ -421,6 +430,9 @@ void Node2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_z_as_relative", "enable"), &Node2D::set_z_as_relative);
 	ClassDB::bind_method(D_METHOD("is_z_relative"), &Node2D::is_z_relative);
 
+	ClassDB::bind_method(D_METHOD("set_y_sort_enabled", "y_sort"), &Node2D::set_y_sort_enabled);
+	ClassDB::bind_method(D_METHOD("is_y_sort_enabled"), &Node2D::is_y_sort_enabled);
+
 	ClassDB::bind_method(D_METHOD("get_relative_transform_to_parent", "parent"), &Node2D::get_relative_transform_to_parent);
 
 	ADD_GROUP("Transform", "");
@@ -439,6 +451,7 @@ void Node2D::_bind_methods() {
 	ADD_GROUP("Z Index", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "z_index", PROPERTY_HINT_RANGE, itos(VS::CANVAS_ITEM_Z_MIN) + "," + itos(VS::CANVAS_ITEM_Z_MAX) + ",1"), "set_z_index", "get_z_index");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "z_as_relative"), "set_z_as_relative", "is_z_relative");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "y_sort"), "set_y_sort_enabled", "is_y_sort_enabled");
 }
 
 #ifdef TOOLS_ENABLED
@@ -456,5 +469,6 @@ Node2D::Node2D() {
 	_scale = Vector2(1, 1);
 	_xform_dirty = false;
 	z_index = 0;
+	y_sort = false;
 	z_relative = true;
 }
