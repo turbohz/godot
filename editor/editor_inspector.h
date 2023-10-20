@@ -154,6 +154,8 @@ public:
 	bool is_selected() const;
 
 	void set_label_reference(Control *p_control);
+	Control *get_label_reference();
+
 	void set_bottom_editor(Control *p_control);
 
 	void set_use_folding(bool p_use_folding);

@@ -578,6 +578,11 @@ void EditorProperty::_unhandled_key_input(const Ref<InputEvent> &p_event) {
 void EditorProperty::set_label_reference(Control *p_control) {
 	label_reference = p_control;
 }
+
+Control *EditorProperty::get_label_reference() {
+	return label_reference;
+}
+
 void EditorProperty::set_bottom_editor(Control *p_control) {
 	bottom_editor = p_control;
 }
@@ -710,6 +715,9 @@ void EditorProperty::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_label", "text"), &EditorProperty::set_label);
 	ClassDB::bind_method(D_METHOD("get_label"), &EditorProperty::get_label);
 
+	ClassDB::bind_method(D_METHOD("set_label_reference", "label_reference"), &EditorProperty::set_label_reference);
+	ClassDB::bind_method(D_METHOD("get_label_reference"), &EditorProperty::get_label_reference);
+
 	ClassDB::bind_method(D_METHOD("set_read_only", "read_only"), &EditorProperty::set_read_only);
 	ClassDB::bind_method(D_METHOD("is_read_only"), &EditorProperty::is_read_only);
 
@@ -739,6 +747,7 @@ void EditorProperty::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("emit_changed", "property", "value", "field", "changing"), &EditorProperty::emit_changed, DEFVAL(StringName()), DEFVAL(false));
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "label"), "set_label", "get_label");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "label_reference", PROPERTY_HINT_RESOURCE_TYPE, "Control", 0), "set_label_reference", "get_label_reference");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "read_only"), "set_read_only", "is_read_only");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "checkable"), "set_checkable", "is_checkable");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "checked"), "set_checked", "is_checked");
