@@ -1,0 +1,29 @@
+#! /bin/bash
+
+set -e
+
+export SCONSFLAGS="-j8"
+
+OPTIONS=(
+	"platform=server"
+	"target=release_debug"
+	"linker=mold"
+)
+
+# compile
+
+echo "Building ($1) with options: ${OPTIONS[*]}"
+scons ${OPTIONS[*]}
+
+SRC="./bin/godot_server.x11.opt.tools.64"
+DST="$HOME/bin/godot-headless"
+
+[[ "$DEBUG" == "1" ]] && exit 0
+
+if ! cmp --quiet "$SRC" "$DST"; then
+    cp "$SRC" "$DST"
+    strip "$DST"
+    echo "✔ Godot Headless updated"
+else
+    echo "Already up to date"
+fi

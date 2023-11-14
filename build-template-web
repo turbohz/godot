@@ -1,0 +1,9 @@
+#! /bin/bash
+
+set -e
+
+export SCONSFLAGS="-j8"
+# export LINKFLAGS="-B/usr/lib/mold"
+# export EMCC_CFLAGS="-g"
+OPTIONS="verbose=yes platform=javascript tools=no target=release_debug"
+scons $OPTIONS

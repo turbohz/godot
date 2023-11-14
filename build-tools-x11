@@ -1,0 +1,59 @@
+#! /bin/bash
+
+set -e
+
+export SCONSFLAGS="-j8"
+
+OPTIONS=(
+	"platform=x11"
+	"tools=yes"
+	"target=release_debug"
+	"udev=yes"
+	"scu_build=yes"
+	"linker=mold"
+)
+
+case "$1" in
+
+	"compat" | "")
+		OPTIONS=(
+			"${OPTIONS[*]}"
+			"optimize=none"
+		);;
+
+	"optim")
+		OPTIONS=(
+			"profile=profiles/custom-tools.py"
+			"${OPTIONS[*]}"
+			"optimize=speed"
+			"lto=none"
+		);;
+
+	"debug")
+		OPTIONS=(
+			"${OPTIONS[*]}"
+			"optimize=none"
+		);;
+
+	*)
+		echo -n "Unknown build type: $1"
+		exit 1
+		;;
+esac
+
+# compile
+
+echo "Building ($1) with options: ${OPTIONS[*]}"
+scons ${OPTIONS[*]}
+
+SRC="./bin/godot.x11.opt.tools.64"
+DST="/usr/bin/godot"
+
+[[ "$DEBUG" == "1" ]] && exit 0
+
+if ! cmp --quiet "$SRC" "$DST"; then
+    sudo cp "$SRC" "$DST"
+    echo "✔ Godot editor updated"
+else
+    echo "Already up to date"
+fi

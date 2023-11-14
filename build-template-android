@@ -1,0 +1,38 @@
+#! /bin/bash
+
+set -e
+
+echo "Using key: $SCRIPT_AES256_ENCRYPTION_KEY"
+
+export ANDROID_SDK_ROOT="$HOME/Android/Sdk/"
+
+export SCONSFLAGS="-j8"
+
+OPTIONS="profile=profiles/custom-template.py platform=android"
+
+# build release templates
+
+scons $OPTIONS android_arch=armv7 target=release
+scons $OPTIONS android_arch=arm64v8 target=release
+
+pushd platform/android/java
+./gradlew generateGodotTemplates
+popd
+
+# build debug templates
+
+unset SCRIPT_AES256_ENCRYPTION_KEY
+
+scons platform=android android_arch=armv7 target=debug
+scons platform=android android_arch=arm64v8 target=debug
+
+pushd platform/android/java
+./gradlew generateGodotTemplates
+popd
+
+if [[ "$1" == "--clean" ]]; then
+    pushd platform/android/java
+    ./gradlew cleanGodotTemplates
+    popd
+    scons --clean $OPTIONS
+fi
