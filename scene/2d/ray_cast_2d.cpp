@@ -217,7 +217,7 @@ void RayCast2D::_draw_debug_shape() {
 
 	// Draw an arrow indicating where the RayCast is pointing to.
 	const real_t max_arrow_size = 6;
-	const real_t line_width = 1.4;
+	const real_t line_width = Engine::get_singleton()->is_editor_hint() ? 1.4 : 1;
 	const real_t line_length = cast_to.length();
 	bool no_line = line_length < line_width;
 	real_t arrow_size = CLAMP(line_length * 2 / 3, line_width, max_arrow_size);

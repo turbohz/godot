@@ -538,14 +538,14 @@ GDScriptParser::Node *GDScriptParser::_parse_expression(Node *p_parent, bool p_s
 					}
 				} else {
 					if (!FileAccess::exists(path)) {
-						_set_error("Can't preload resource at path: " + path);
+						_set_error("File does not exist at: " + path);
 						return nullptr;
 					} else if (ScriptCodeCompletionCache::get_singleton()) {
 						res = ScriptCodeCompletionCache::get_singleton()->get_cached_resource(path);
 					}
 				}
 				if (!res.is_valid()) {
-					_set_error("Can't preload resource at path: " + path);
+					_set_error("Invalid Resource at: " + path + ".\n");
 					return nullptr;
 				}
 			}

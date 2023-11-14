@@ -460,7 +460,7 @@ void register_scene_types() {
 	ClassDB::register_class<NavigationMeshInstance>();
 	ClassDB::register_class<NavigationMesh>();
 	ClassDB::register_class<Navigation>();
-	ClassDB::register_class<Room>();
+	// ClassDB::register_class<Room>();
 	ClassDB::register_class<RoomGroup>();
 	ClassDB::register_class<RoomManager>();
 	ClassDB::register_class<Occluder>();

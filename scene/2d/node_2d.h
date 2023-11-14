@@ -41,6 +41,7 @@ class Node2D : public CanvasItem {
 	Size2 _scale;
 	int z_index;
 	bool z_relative;
+	bool y_sort;
 
 	Transform2D _mat;
 
@@ -111,6 +112,9 @@ public:
 
 	void set_z_as_relative(bool p_enabled);
 	bool is_z_relative() const;
+
+	void set_y_sort_enabled(bool p_enabled);
+	bool is_y_sort_enabled() const;
 
 	Transform2D get_relative_transform_to_parent(const Node *p_parent) const;
 
