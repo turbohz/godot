@@ -744,6 +744,10 @@ int ResourceInteractiveLoaderBinary::get_stage_count() const {
 	return external_resources.size() + internal_resources.size();
 }
 
+String ResourceInteractiveLoaderBinary::get_error_message() {
+	return String("Error code: " + itos(error));
+}
+
 void ResourceInteractiveLoaderBinary::set_translation_remapped(bool p_remapped) {
 	translation_remapped = p_remapped;
 }

@@ -3389,7 +3389,7 @@ static _FORCE_INLINE_ bool _is_valid_identifier_bit(int p_index, CharType p_char
 	if (p_index == 0 && p_char >= '0' && p_char <= '9') {
 		return false; // No start with number plz.
 	}
-	return (p_char >= '0' && p_char <= '9') || (p_char >= 'a' && p_char <= 'z') || (p_char >= 'A' && p_char <= 'Z') || p_char == '_';
+	return (p_char >= '0' && p_char <= '9') || (p_char >= 'a' && p_char <= 'z') || (p_char >= 'A' && p_char <= 'Z') || p_char == '_' || p_char == '?' || p_char == '!';
 }
 
 String String::validate_identifier() const {

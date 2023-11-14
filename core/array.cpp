@@ -500,6 +500,15 @@ Array::Array(const Array &p_from) {
 	_ref(p_from);
 }
 
+Array::Array(int p_size, const Variant &p_value) {
+	_p = memnew(ArrayPrivate);
+	_p->refcount.init();
+	_p->array.resize(p_size);
+	for (int i = 0; i < p_size; i++) {
+		_p->array.set(i, p_value);
+	}
+}
+
 Array::Array() {
 	_p = memnew(ArrayPrivate);
 	_p->refcount.init();

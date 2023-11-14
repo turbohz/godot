@@ -88,6 +88,7 @@ public:
 	virtual Error poll();
 	virtual int get_stage() const;
 	virtual int get_stage_count() const;
+	virtual String get_error_message();
 	virtual void set_translation_remapped(bool p_remapped);
 
 	void set_remaps(const Map<String, String> &p_remaps) { remaps = p_remaps; }

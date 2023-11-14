@@ -31,6 +31,7 @@
 #include "animation_track_editor.h"
 
 #include "animation_track_editor_plugins.h"
+#include "core/message_queue.h"
 #include "core/os/input.h"
 #include "core/os/keyboard.h"
 #include "editor/animation_bezier_editor.h"
@@ -60,6 +61,7 @@ public:
 		ClassDB::bind_method("_hide_script_from_inspector", &AnimationTrackKeyEdit::_hide_script_from_inspector);
 		ClassDB::bind_method("get_root_path", &AnimationTrackKeyEdit::get_root_path);
 		ClassDB::bind_method("_dont_undo_redo", &AnimationTrackKeyEdit::_dont_undo_redo);
+		ADD_SIGNAL(MethodInfo("_key_selected", PropertyInfo(Variant::INT, "index"), PropertyInfo(Variant::BOOL, "single"), PropertyInfo(Variant::INT, "track")));
 	}
 
 	void _fix_node_path(Variant &value) {
@@ -107,6 +109,12 @@ public:
 		ERR_FAIL_COND_V(key == -1, false);
 
 		String name = p_name;
+
+		if (name == "key") {
+			emit_signal("_key_selected", p_value, true, track);
+			return true;
+		}
+
 		if (name == "time" || name == "frame") {
 			float new_time = p_value;
 
@@ -197,6 +205,7 @@ public:
 					undo_redo->commit_action();
 
 					setting = false;
+					emit_signal("_key_selected", key, true, track);
 					return true;
 				}
 			} break;
@@ -385,12 +394,17 @@ public:
 
 		return false;
 	}
-
 	bool _get(const StringName &p_name, Variant &r_ret) const {
 		int key = animation->track_find_key(track, key_ofs, true);
 		ERR_FAIL_COND_V(key == -1, false);
 
 		String name = p_name;
+
+		if (name == "key") {
+			r_ret = key;
+			return true;
+		}
+
 		if (name == "time") {
 			r_ret = key_ofs;
 			return true;
@@ -513,6 +527,9 @@ public:
 		ERR_FAIL_INDEX(track, animation->get_track_count());
 		int key = animation->track_find_key(track, key_ofs, true);
 		ERR_FAIL_COND(key == -1);
+
+		int last_key = animation->track_get_key_count(track) - 1;
+		p_list->push_back(PropertyInfo(Variant::INT, PNAME("key"), PROPERTY_HINT_RANGE, "0," + rtos(last_key) + ",1"));
 
 		if (use_fps && animation->get_step() > 0) {
 			float max_frame = animation->get_length() / animation->get_step();
@@ -4840,14 +4857,21 @@ void AnimationTrackEditor::_update_key_edit() {
 	}
 
 	if (selection.size() == 1) {
+		SelectedKey selected = selection.front()->key();
+		float ofs = animation->track_get_key_time(selected.track, selected.key);
+
+		if (seek_key->is_pressed()) {
+			set_anim_pos(ofs);
+			emit_signal("timeline_changed", ofs, false);
+		}
+
 		key_edit = memnew(AnimationTrackKeyEdit);
 		key_edit->animation = animation;
-		key_edit->track = selection.front()->key().track;
+		key_edit->track = selected.track;
 		key_edit->use_fps = timeline->is_using_fps();
-
-		float ofs = animation->track_get_key_time(key_edit->track, selection.front()->key().key);
 		key_edit->key_ofs = ofs;
 		key_edit->root_path = root;
+		key_edit->connect("_key_selected", this, "_key_selected", varray(), CONNECT_DEFERRED);
 
 		NodePath np;
 		key_edit->hint = _find_hint_for_track(key_edit->track, np);
@@ -5984,6 +6008,15 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	view_group->set_tooltip(TTR("Group tracks by node or display them as plain list."));
 
 	bottom_hb->add_child(view_group);
+	bottom_hb->add_child(memnew(VSeparator));
+
+	seek_key = memnew(ToolButton);
+	seek_key->set_text(TTR("seek key"));
+	seek_key->set_toggle_mode(true);
+	seek_key->set_tooltip(TTR("Update timeline seek when selecting a single key"));
+	seek_key->set_pressed(true);
+
+	bottom_hb->add_child(seek_key);
 	bottom_hb->add_child(memnew(VSeparator));
 
 	snap = memnew(ToolButton);

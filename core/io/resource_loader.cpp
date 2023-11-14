@@ -120,6 +120,7 @@ void ResourceInteractiveLoader::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("wait"), &ResourceInteractiveLoader::wait);
 	ClassDB::bind_method(D_METHOD("get_stage"), &ResourceInteractiveLoader::get_stage);
 	ClassDB::bind_method(D_METHOD("get_stage_count"), &ResourceInteractiveLoader::get_stage_count);
+	ClassDB::bind_method(D_METHOD("get_error_message"), &ResourceInteractiveLoader::get_error_message);
 	ClassDB::bind_method(D_METHOD("set_no_subresource_cache", "no_subresource_cache"), &ResourceInteractiveLoader::set_no_subresource_cache);
 	ClassDB::bind_method(D_METHOD("get_no_subresource_cache"), &ResourceInteractiveLoader::get_no_subresource_cache);
 
@@ -138,6 +139,7 @@ public:
 	virtual Error poll() { return ERR_FILE_EOF; }
 	virtual int get_stage() const { return 1; }
 	virtual int get_stage_count() const { return 1; }
+	virtual String get_error_message() { return String(); }
 	virtual void set_translation_remapped(bool p_remapped) { resource->set_as_translation_remapped(p_remapped); }
 
 	ResourceInteractiveLoaderDefault() {}
